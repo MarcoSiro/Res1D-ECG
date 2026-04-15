@@ -30,7 +30,7 @@ Ensure you have Python 3.10+ installed. It is highly recommended to use a virtua
 ### 1. Installation
 Clone the repository and install the required dependencies:
 ```bash
-git clone [https://github.com/MarcoSiro/DeepECG.git](https://github.com/MarcoSiro/DeepECG.git)
+git clone [https://github.com/MarcoSiro/Res1D-ECG.git](https://github.com/MarcoSiro/Res1D-ECG.git)
 cd DeepECG
 pip install torch torchvision torchaudio  # Use appropriate flags for CUDA/MPS support
 pip install lightning torchmetrics pandas numpy matplotlib wfdb requests tqdm
