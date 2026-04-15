@@ -45,7 +45,7 @@ python src/download_data.py
 ### 3. Run the Pipeline (Train & Test)
 Execute the main script to start the PyTorch Lightning trainer. Upon completion, the script automatically tests the model and generates ROC curves and XAI reports in the `logs/` directory.
 ```bash
-python src/main1.py
+python src/main.py
 ```
 
 ## 📊 Baseline Results
