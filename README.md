@@ -74,7 +74,7 @@ After a rapid MVP training cycle (20 epochs), the ResNet-1D architecture establi
 </p>
 
 <p align="center">
-  <img src="assets/xai_Success_1.png" alt="XAI Report" width="600"/>
+  <img src="assets/xai_Success_MI_1.png" alt="XAI Report" width="600"/>
   <br><em>Figure 3: Automated XAI Report. Red zones indicate maximum network attention during a successful classification.
 </p>
 </details>
