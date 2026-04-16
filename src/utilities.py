@@ -87,10 +87,16 @@ class LightningModel(L.LightningModule):
 
         # ROC curve for clinical validation for test set
         self.test_roc = torchmetrics.ROC(task="multilabel", num_labels=num_classes)
+        
+        # Precision-Recall curve for clinical validation for test set
+        self.test_pr_curve = torchmetrics.PrecisionRecallCurve(task="multilabel", num_labels=num_classes)
+        self.test_ap = torchmetrics.AveragePrecision(task="multilabel", num_labels=num_classes)
 
         self.roc_data_saved = None
         self.final_auroc_saved = None
         self.final_f1_saved = None
+        self.pr_data_saved = None
+        self.final_ap_saved = None
 
     def forward(self, x):
         return self.model(x)
@@ -128,11 +134,13 @@ class LightningModel(L.LightningModule):
         self.test_auroc(logits, true_labels.long())
         self.test_f1(logits, true_labels.long())
         
-        # Passiamo i dati alla funzione ROC per accumularli
         self.test_roc(logits, true_labels.long())
+        self.test_pr_curve(logits, true_labels.long())
+        self.test_ap(logits, true_labels.long())
         
         self.log("test_auroc", self.test_auroc)
         self.log("test_f1", self.test_f1)
+        self.log("test_ap", self.test_ap)
 
     def configure_optimizers(self):
         # Using AdamW optimazer
@@ -143,6 +151,8 @@ class LightningModel(L.LightningModule):
         self.roc_data_saved = self.test_roc.compute()
         self.final_auroc_saved = self.test_auroc.compute().item()
         self.final_f1_saved = self.test_f1.compute().item()
+        self.pr_data_saved = self.test_pr_curve.compute()
+        self.final_ap_saved = self.test_ap.compute().item()
     
 
 
@@ -264,13 +274,10 @@ def plot_test_metrics(lightning_model, class_names, log_dir):   #Function to plo
     print("\n" + "="*40)
     print("      FINAL TEST METRICS REPORT (AUROC, F1 Score, ROC Curve)      ")
     print("="*40)
-    
-    if lightning_model.final_auroc_saved is not None:
-        print(f"AUROC Macro-Average:  {lightning_model.final_auroc_saved:.4f}")
-        print(f"F1-Score Macro-Average: {lightning_model.final_f1_saved:.4f}\n")
-    else:
-        print("Errore: Metriche non salvate correttamente in memoria.")
-        return
+    print(f"ROC-AUC:     {lightning_model.final_auroc_saved:.4f}")
+    print(f"PR-AUC:      {lightning_model.final_ap_saved:.4f}")
+    print(f"F1-Score:    {lightning_model.final_f1_saved:.4f}")
+    print("="*40)
 
     fpr, tpr, thresholds = lightning_model.roc_data_saved
 
@@ -290,7 +297,31 @@ def plot_test_metrics(lightning_model, class_names, log_dir):   #Function to plo
     plt.tight_layout()
     plt.savefig(os.path.join(log_dir, 'roc_curve.png'), dpi=300)
     print("-> Saved: roc_curve.png")
-    plt.show()
+    
+    plt.close() 
+
+    # PR curve
+    if lightning_model.pr_data_saved is not None:
+        precision, recall, thresholds_pr = lightning_model.pr_data_saved
+        
+        plt.figure(figsize=(10, 8))
+        for i in range(len(class_names)):
+            p_vals = precision[i].cpu().numpy()
+            r_vals = recall[i].cpu().numpy()
+            plt.plot(r_vals, p_vals, lw=2, label=f'{class_names[i]}')
+            
+        plt.xlim([0.0, 1.0])
+        plt.ylim([0.0, 1.05])
+        plt.xlabel('Recall (Sensitivity)', fontsize=12)
+        plt.ylabel('Precision (Positive Predictive Value)', fontsize=12)
+        plt.title('Precision-Recall curves for multi-class ECG', fontsize=14, fontweight='bold')
+        plt.legend(loc="lower left") 
+        plt.grid(alpha=0.3)
+        
+        plt.tight_layout()
+        plt.savefig(os.path.join(log_dir, 'pr_curve.png'), dpi=300)
+        print("-> Saved: pr_curve.png")
+        plt.show()
 
 
 
@@ -301,8 +332,9 @@ def plot_xai_examples(model, datamodule, class_names, log_dir, num_examples=3):
     model.eval()
     device = next(model.parameters()).device
     
-    success_patho_indices = []
-    error_indices = []
+    mi_success = []          # Forcing at least one successful MI case (if available)
+    other_success = []       
+    error_indices = []       
     
     loader = datamodule.test_dataloader()
     
@@ -317,16 +349,22 @@ def plot_xai_examples(model, datamodule, class_names, log_dir, num_examples=3):
 
         for i in range(len(labels)):
             is_correct = torch.equal(preds[i], labels[i])
+            is_mi = (labels[i][1] == 1) 
             is_pathological = torch.sum(labels[i][1:]) > 0 
             
-            if is_correct and is_pathological and len(success_patho_indices) < num_examples:
-                success_patho_indices.append((inputs[i:i+1].detach().clone(), labels[i].cpu(), probs[i].detach().cpu(), "Success"))
-                
+            if is_correct and is_mi and len(mi_success) < 1:
+                mi_success.append((inputs[i:i+1].detach().clone(), labels[i].cpu(), probs[i].detach().cpu(), "Success_MI"))
+            
+            elif is_correct and is_pathological and not is_mi and len(other_success) < (num_examples - 1):
+                other_success.append((inputs[i:i+1].detach().clone(), labels[i].cpu(), probs[i].detach().cpu(), "Success_Other"))
+            
             if not is_correct and len(error_indices) < num_examples:
                 error_indices.append((inputs[i:i+1].detach().clone(), labels[i].cpu(), probs[i].detach().cpu(), "Error"))
                 
-        if len(success_patho_indices) >= num_examples and len(error_indices) >= num_examples:
+        if len(mi_success) >= 1 and len(other_success) >= (num_examples - 1) and len(error_indices) >= num_examples:
             break
+
+    success_patho_indices = mi_success + other_success
 
     def draw_single_xai(input_tensor, label, prob, category, count):
         input_tensor.requires_grad = True
@@ -348,7 +386,7 @@ def plot_xai_examples(model, datamodule, class_names, log_dir, num_examples=3):
         true_text = ", ".join(str_true)
         pred_text = ", ".join(str_pred)
         
-        display_category = "Success case" if category == "Success" else "Error case"
+        display_category = "Success case" if "Success" in category else "Error case"
         
         title = f"{display_category} #{count+1}. Model prediction: {pred_text} | Real: {true_text}\n(Area Rossa = Focus della rete su: {class_names[target_class_idx]})"
 

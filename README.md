@@ -11,7 +11,7 @@
 ## ✨ Key Features
 * **Multi-Label Classification:** Accurately mimics real-world clinical scenarios where patients present with multiple overlapping pathologies (e.g., Myocardial Infarction + Conduction Defect).
 * **Automated Data Pipeline:** Built-in ingestion scripts to download, extract, and map the PTB-XL dataset (SCP-ECG standard codes to macro-categories) without manual intervention.
-* **Optimized Training Engine:** Powered by PyTorch Lightning with persistent data workers, automated learning curve generation, and metric tracking (Macro-Average AUROC & F1-Score).
+* **Optimized Training Engine:** Powered by PyTorch Lightning with persistent data workers, automated learning curve generation, and metric tracking (Macro-Average ROC-AUROC, PR-AUROC & F1-Score).
 * **Clinical Interpretability (XAI):** Automatically generates high-resolution Vanilla Saliency Maps (Input Gradients) to visually highlight the specific morphological features (e.g., QRS complexes, ST segments) driving the model's predictions.
 
 ## 🔬 Dataset & Diagnostic Classes
@@ -54,8 +54,9 @@ After a rapid MVP training cycle (20 epochs), the ResNet-1D architecture establi
 
 | Metric | Score |
 | :--- | :--- |
-| **AUROC (Macro-Average)** | `0.9005` |
-| **F1-Score (Macro-Average)** | `0.6692` |
+| **ROC-AUROC (Macro-Average)** | `0.9011` |
+| **PR-AUROC (Macro-Average)** | `0.7570` |
+| **F1-Score (Macro-Average)** | `0.6667` |
 
 <details>
 <summary><b>View Performance & XAI Graphics</b></summary>
@@ -66,9 +67,15 @@ After a rapid MVP training cycle (20 epochs), the ResNet-1D architecture establi
   <br><em>Figure 1: Receiver Operating Characteristic (ROC) curves per pathology.</em>
 </p>
 
+<br>
+<p align="center">
+  <img src="assets/pr_curve.png" alt="PR Curve" width="600"/>
+  <br><em>Figure 2: Precison-Recall curves per pathology.</em>
+</p>
+
 <p align="center">
   <img src="assets/xai_Success_1.png" alt="XAI Report" width="600"/>
-  <br><em>Figure 2: Automated XAI Report. Red zones indicate maximum network attention during a successful classification.</em>logs/ecg-resnet1d/version_8/xai_Success_1.png
+  <br><em>Figure 3: Automated XAI Report. Red zones indicate maximum network attention during a successful classification.
 </p>
 </details>
 
