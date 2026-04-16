@@ -10,17 +10,15 @@ env/
 *.pyo
 *.pyd
 
-# Dati pesanti (fondamentale ignorarli)
+# Dati pesanti 
 data/
 *.zip
 *.tar.gz
 
 # Logs e risultati pesanti
-# Se vuoi caricare i risultati nel README, ti consiglio di spostare 
-# le immagini che ti servono in una cartella 'docs/' o 'assets/'
 logs/
 
-# Sistema Operativo (Mac)
+# Sistema Operativo
 .DS_Store
 
 # IDE (VS Code)
