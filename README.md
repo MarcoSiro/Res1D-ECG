@@ -89,7 +89,7 @@ DeepECG/
 │   └── download_data.py     # Data fetching and restructuring script
 ├── data/                    # PTB-XL dataset (Auto-generated, git-ignored)
 ├── logs/                    # Automated outputs (Metrics, Loss curves, ROC, XAI)
-├── assets/                  # ROC curve and XAI examples
+├── assets/                  # ROC curve, PR curve and XAI examples 
 ├── .gitignore
 └── README.md
 ```
