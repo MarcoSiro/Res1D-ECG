@@ -14,7 +14,7 @@
 * **Optimized Training Engine:** Powered by PyTorch Lightning with persistent data workers, automated learning curve generation, and metric tracking (Macro-Average ROC-AUROC, PR-AUROC & F1-Score).
 * **Clinical Interpretability (XAI):** Automatically generates high-resolution Vanilla Saliency Maps (Input Gradients) to visually highlight the specific morphological features (e.g., QRS complexes, ST segments) driving the model's predictions.
 
-## 🔬 Dataset & Diagnostic Classes
+## Dataset & Diagnostic Classes
 The model is trained on the [PTB-XL Dataset](https://physionet.org/content/ptb-xl/1.0.3/), comprising over 21,000 clinical 10-second, 12-lead ECG records. Diagnoses are mapped into 5 superclasses:
 1. `NORM`: Normal ECG
 2. `MI`: Myocardial Infarction
@@ -22,31 +22,6 @@ The model is trained on the [PTB-XL Dataset](https://physionet.org/content/ptb-x
 4. `CD`: Conduction Disturbance
 5. `HYP`: Hypertrophy
 
-## 🚀 Getting Started
-
-### Prerequisites
-Ensure you have Python 3.10+ installed. It is highly recommended to use a virtual environment (`venv` or `conda`).
-
-### 1. Installation
-Clone the repository and install the required dependencies:
-```bash
-git clone [https://github.com/MarcoSiro/Res1D-ECG.git](https://github.com/MarcoSiro/Res1D-ECG.git)
-cd DeepECG
-pip install torch torchvision torchaudio  # Use appropriate flags for CUDA/MPS support
-pip install lightning torchmetrics pandas numpy matplotlib wfdb requests tqdm
-```
-
-### 2. Data Ingestion
-Run the automated downloader to fetch and restructure the PTB-XL dataset (~2.7 GB):
-```bash
-python src/download_data.py
-```
-
-### 3. Run the Pipeline (Train & Test)
-Execute the main script to start the PyTorch Lightning trainer. Upon completion, the script automatically tests the model and generates ROC curves and XAI reports in the `logs/` directory.
-```bash
-python src/main.py
-```
 
 ## Baseline Results
 
@@ -88,10 +63,43 @@ DeepECG/
 │   ├── utilities.py         # ResNet1D, LightningModule, DataModule, and XAI logic
 │   └── download_data.py     # Data fetching and restructuring script
 ├── data/                    # PTB-XL dataset (Auto-generated, git-ignored)
+├── checkpoints/             # Best model weights (.ckpt)
 ├── logs/                    # Automated outputs (Metrics, Loss curves, ROC, XAI)
 ├── assets/                  # ROC curve, PR curve and XAI examples 
 ├── .gitignore
+├── requirements.txt 
 └── README.md
+```
+
+## Getting Started
+
+### Prerequisites
+Ensure you have Python 3.10+ installed. It is highly recommended to use a virtual environment (`venv` or `conda`).
+
+### 1. Installation
+Clone the repository and install the required dependencies:
+```bash
+git clone [https://github.com/MarcoSiro/Res1D-ECG.git](https://github.com/MarcoSiro/Res1D-ECG.git)
+cd DeepECG
+pip install -r requirements.txt
+```
+
+### 2. Data Ingestion
+Run the automated downloader to fetch and restructure the PTB-XL dataset (~2.7 GB):
+```bash
+python src/download_data.py
+```
+
+### 3. Run the Pipeline (Train & Test)
+Execute the main script to start the PyTorch Lightning trainer. Upon completion, the script automatically tests the model and generates ROC curves and XAI reports in the `logs/` directory.
+```bash
+python src/main.py
+```
+
+### 4. Load Pre-Trained Weights
+The best-performing model checkpoint is included in the /checkpoints folder. To load the model for inference:
+```python
+model = LightningModel.load_from_checkpoint("checkpoints/best-model.ckpt")
 ```
 
 ## Author & License
