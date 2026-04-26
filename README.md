@@ -1,4 +1,4 @@
-# 🫀 DeepECG: Explainable 1D-ResNet for Multi-Label ECG Diagnostics
+# DeepECG: Explainable 1D-ResNet for Multi-Label ECG Diagnostics
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.0+-EE4C2C.svg?logo=pytorch)](https://pytorch.org/)
@@ -8,7 +8,7 @@
 
 **DeepECG** is an end-to-end Machine Learning Minimum Viable Product (MVP) that bridges clinical cardiology and software engineering. It utilizes a custom 1D Residual Neural Network (ResNet-1D) to automatically classify clinical 12-lead Electrocardiograms (ECGs) into five major diagnostic superclasses, providing **Explainable AI (XAI)** reports for clinical validation.
 
-## ✨ Key Features
+## Key Features
 * **Multi-Label Classification:** Accurately mimics real-world clinical scenarios where patients present with multiple overlapping pathologies (e.g., Myocardial Infarction + Conduction Defect).
 * **Automated Data Pipeline:** Built-in ingestion scripts to download, extract, and map the PTB-XL dataset (SCP-ECG standard codes to macro-categories) without manual intervention.
 * **Optimized Training Engine:** Powered by PyTorch Lightning with persistent data workers, automated learning curve generation, and metric tracking (Macro-Average ROC-AUROC, PR-AUROC & F1-Score).
@@ -48,7 +48,7 @@ Execute the main script to start the PyTorch Lightning trainer. Upon completion,
 python src/main.py
 ```
 
-## 📊 Baseline Results
+## Baseline Results
 
 After a rapid MVP training cycle (20 epochs), the ResNet-1D architecture establishes a highly discriminative baseline on the unseen test set:
 
@@ -79,7 +79,7 @@ After a rapid MVP training cycle (20 epochs), the ResNet-1D architecture establi
 </p>
 </details>
 
-## 📁 Repository Structure
+## Repository Structure
 
 ```text
 DeepECG/
@@ -94,7 +94,7 @@ DeepECG/
 └── README.md
 ```
 
-## 👨‍⚕️ Author & License
+## Author & License
 **Marco Sironi** *Cardiology Resident & Health-Tech Developer*
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
