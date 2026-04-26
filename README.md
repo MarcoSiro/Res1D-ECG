@@ -64,7 +64,7 @@ DeepECG/
 │   └── download_data.py     # Data fetching and restructuring script
 ├── data/                    # PTB-XL dataset (Auto-generated, git-ignored)
 ├── checkpoints/             # Best model weights (.ckpt)
-├── logs/                    # Automated outputs (Metrics, Loss curves, ROC, XAI)
+├── logs/                    # Metrics, Loss curves, ROC, XAI (Auto-generated after training)
 ├── assets/                  # ROC curve, PR curve and XAI examples 
 ├── .gitignore
 ├── requirements.txt 
